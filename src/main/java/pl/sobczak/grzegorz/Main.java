@@ -1,7 +1,6 @@
 package pl.sobczak.grzegorz;
 
 public class Main {
-    static void main() {
-
+    public static void main(String[] args) {
     }
 }
