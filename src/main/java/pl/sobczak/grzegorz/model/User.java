@@ -12,19 +12,23 @@ public class User {
     private String role;
     private boolean isActive;
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String userId, String firstName, String lastName, String email, String password) {
         validateName(firstName, "First name");
         validateName(lastName, "Last name");
         validateEmail(email);
         validatePassword(password);
 
-        this.userId = UUID.randomUUID().toString();
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.role = "USER";
         this.isActive = true;
+    }
+
+    public User(String firstName, String lastName, String email, String password) {
+        this(UUID.randomUUID().toString(), firstName, lastName, email, password);
     }
 
     public String getEmail() { return email; }
