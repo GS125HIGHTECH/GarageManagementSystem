@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class User {
-    private final String userId;
+    private final String id;
     private String firstName;
     private String lastName;
     private String email;
@@ -12,13 +12,13 @@ public class User {
     private String role;
     private boolean isActive;
 
-    public User(String userId, String firstName, String lastName, String email, String password) {
+    public User(String id, String firstName, String lastName, String email, String password) {
         validateName(firstName, "First name");
         validateName(lastName, "Last name");
         validateEmail(email);
         validatePassword(password);
 
-        this.userId = userId;
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -34,7 +34,7 @@ public class User {
     public String getEmail() { return email; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
-    public String getUserId() { return userId; }
+    public String getUserId() { return id; }
     public boolean isActive() { return isActive; }
     public String getRole() { return role; }
 
@@ -94,7 +94,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id='" + userId + '\'' +
+                "id='" + id + '\'' +
                 ", name='" + firstName + " " + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
@@ -107,11 +107,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(userId, user.userId);
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId);
+        return Objects.hash(id);
     }
 }

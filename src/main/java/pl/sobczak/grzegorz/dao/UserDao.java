@@ -16,7 +16,7 @@ public class UserDao {
     }
 
     public void saveUser(User user) {
-        String sql = "INSERT INTO users(userId, firstName, lastName, email, password, role, isActive) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO users(id, firstName, lastName, email, password, role, isActive) VALUES(?,?,?,?,?,?,?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, user.getUserId());
@@ -34,7 +34,7 @@ public class UserDao {
     }
 
     public void updateUser(User user) {
-        String sql = "UPDATE users SET firstName = ?, lastName = ?, role = ?, isActive = ? WHERE userId = ?";
+        String sql = "UPDATE users SET firstName = ?, lastName = ?, role = ?, isActive = ? WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, user.getFirstName());
             pstmt.setString(2, user.getLastName());
@@ -47,10 +47,10 @@ public class UserDao {
         }
     }
 
-    public void deleteUser(String userId) {
-        String sql = "DELETE FROM users WHERE userId = ?";
+    public void deleteUser(String id) {
+        String sql = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, userId);
+            pstmt.setString(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting user", e);
@@ -64,7 +64,7 @@ public class UserDao {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     User user = new User(
-                            rs.getString("userId"),
+                            rs.getString("id"),
                             rs.getString("firstName"),
                             rs.getString("lastName"),
                             rs.getString("email"),

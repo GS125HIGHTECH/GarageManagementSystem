@@ -89,7 +89,7 @@ public class UserDaoTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
 
-        when(mockResultSet.getString("userId")).thenReturn("123");
+        when(mockResultSet.getString("id")).thenReturn("123");
         when(mockResultSet.getString("firstName")).thenReturn("Jan");
         when(mockResultSet.getString("lastName")).thenReturn("Kowalski");
         when(mockResultSet.getString("email")).thenReturn(email);
@@ -115,7 +115,7 @@ public class UserDaoTest {
         // Given
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString("userId")).thenReturn("123");
+        when(mockResultSet.getString("id")).thenReturn("123");
         when(mockResultSet.getString("firstName")).thenReturn("Jan");
         when(mockResultSet.getString("lastName")).thenReturn("Kowalski");
         when(mockResultSet.getString("email")).thenReturn("jan@test.pl");
