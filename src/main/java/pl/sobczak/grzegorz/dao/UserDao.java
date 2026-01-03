@@ -63,23 +63,42 @@ public class UserDao {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    User user = new User(
-                            rs.getString("id"),
-                            rs.getString("firstName"),
-                            rs.getString("lastName"),
-                            rs.getString("email"),
-                            "secret"
-                    );
-
-                    user.updateRole(rs.getString("role"));
-                    if (rs.getInt("isActive") == 0) user.deactivate();
-
-                    return Optional.of(user);
+                    return Optional.of(mapRowToUser(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching user", e);
         }
         return Optional.empty();
+    }
+
+    public Optional<User> getUserById(String id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRowToUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching user by ID", e);
+        }
+        return Optional.empty();
+    }
+
+    private User mapRowToUser(ResultSet rs) throws SQLException {
+        User user = new User(
+                rs.getString("id"),
+                rs.getString("firstName"),
+                rs.getString("lastName"),
+                rs.getString("email"),
+                "secret"
+        );
+        user.updateRole(rs.getString("role"));
+        if (rs.getInt("isActive") == 0) {
+            user.deactivate();
+        }
+        return user;
     }
 }
