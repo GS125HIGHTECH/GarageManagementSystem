@@ -14,11 +14,14 @@ public class DatabaseConnection {
 
     public static void initDatabase() {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "firstName TEXT," +
-                "lastName TEXT," +
-                "email TEXT UNIQUE," +
-                "password TEXT)";
+                "id TEXT PRIMARY KEY, " +
+                "firstName TEXT NOT NULL, " +
+                "lastName TEXT NOT NULL, " +
+                "email TEXT UNIQUE NOT NULL, " +
+                "password TEXT NOT NULL, " +
+                "role TEXT NOT NULL, " +
+                "isActive INTEGER NOT NULL" +
+                ")";
 
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
