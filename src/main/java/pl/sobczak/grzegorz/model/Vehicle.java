@@ -6,9 +6,9 @@ import java.util.UUID;
 public class Vehicle {
     private final String id;
     private final String ownerId;
-    private String brand;
-    private String model;
-    private String vin;
+    private final String brand;
+    private final String model;
+    private final String vin;
     private String color;
 
     public Vehicle(String id, String ownerId, String brand, String model, String vin, String color) {
