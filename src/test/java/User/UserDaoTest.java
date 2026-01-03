@@ -133,16 +133,45 @@ public class UserDaoTest {
     }
 
     @Test
-    void shouldReturnEmptyOptionalWhenUserDoesNotExist() throws SQLException {
+    void shouldReturnUserWhenIdExists() throws SQLException {
+        // Given
+        String userId = "123";
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+
+        when(mockResultSet.getString("id")).thenReturn(userId);
+        when(mockResultSet.getString("firstName")).thenReturn("Jan");
+        when(mockResultSet.getString("lastName")).thenReturn("Kowalski");
+        when(mockResultSet.getString("email")).thenReturn("jan@test.pl");
+        when(mockResultSet.getString("role")).thenReturn("USER");
+        when(mockResultSet.getInt("isActive")).thenReturn(1);
+
+        // When
+        var result = userDao.getUserById(userId);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(userId, result.get().getUserId());
+        assertEquals("Jan", result.get().getFirstName());
+        verify(mockPreparedStatement).setString(1, userId);
+        verify(mockPreparedStatement, times(1)).executeQuery();
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenUserNotFoundByIdOrEmail() throws SQLException {
         // Given
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
         // When
         var result = userDao.getUserByEmail("not@found.pl");
+        var result2 = userDao.getUserById("123");
 
         // Then
         assertTrue(result.isEmpty());
+        assertTrue(result2.isEmpty());
+
+        verify(mockPreparedStatement, times(2)).executeQuery();
     }
 
     @Test
@@ -184,6 +213,16 @@ public class UserDaoTest {
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userDao.getUserByEmail("test@pl"));
+        assertEquals("Error fetching user", exception.getMessage());
+    }
+
+    @Test
+    void getUserByIdShouldThrowRuntimeExceptionOnSqlException() throws SQLException {
+        // Given
+        when(mockPreparedStatement.executeQuery()).thenThrow(new SQLException("Fetch failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> userDao.getUserById("123"));
         assertEquals("Error fetching user", exception.getMessage());
     }
 }

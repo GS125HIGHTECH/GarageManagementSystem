@@ -82,7 +82,7 @@ public class UserDao {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching user by ID", e);
+            throw new RuntimeException("Error fetching user", e);
         }
         return Optional.empty();
     }
