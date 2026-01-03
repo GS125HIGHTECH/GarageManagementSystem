@@ -13,7 +13,7 @@ public class DatabaseConnection {
     }
 
     public static void initDatabase() {
-        String sql = "CREATE TABLE IF NOT EXISTS users (" +
+        String sqlUsers = "CREATE TABLE IF NOT EXISTS users (" +
                 "id TEXT PRIMARY KEY, " +
                 "firstName TEXT NOT NULL, " +
                 "lastName TEXT NOT NULL, " +
@@ -23,11 +23,22 @@ public class DatabaseConnection {
                 "isActive INTEGER NOT NULL" +
                 ")";
 
+        String sqlVehicles = "CREATE TABLE IF NOT EXISTS vehicles (" +
+                "id TEXT PRIMARY KEY, " +
+                "ownerId TEXT NOT NULL, " +
+                "brand TEXT NOT NULL, " +
+                "model TEXT NOT NULL, " +
+                "vin TEXT UNIQUE NOT NULL, " +
+                "color TEXT, " +
+                "FOREIGN KEY (ownerId) REFERENCES users(id)" +
+                ")";
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+            stmt.execute(sqlUsers);
+            stmt.execute(sqlVehicles);
         } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
+            throw new RuntimeException("Could not initialize database tables", e);
         }
     }
 }
