@@ -33,10 +33,21 @@ public class DatabaseConnection {
                 "FOREIGN KEY (ownerId) REFERENCES users(id)" +
                 ")";
 
+        String sqlRepairOrders = "CREATE TABLE IF NOT EXISTS repair_orders (" +
+                "id TEXT PRIMARY KEY, " +
+                "vehicleId TEXT NOT NULL, " +
+                "description TEXT, " +
+                "cost REAL, " +
+                "status TEXT NOT NULL, " +
+                "createdAt TEXT NOT NULL, " +
+                "FOREIGN KEY (vehicleId) REFERENCES vehicles(id)" +
+                ")";
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sqlUsers);
             stmt.execute(sqlVehicles);
+            stmt.execute(sqlRepairOrders);
         } catch (SQLException e) {
             throw new RuntimeException("Could not initialize database tables", e);
         }
