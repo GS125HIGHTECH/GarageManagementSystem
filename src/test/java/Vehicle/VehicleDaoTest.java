@@ -58,6 +58,41 @@ public class VehicleDaoTest {
     }
 
     @Test
+    void shouldFindVehicleById() throws SQLException {
+        // Given
+        String id = "123";
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString("id")).thenReturn(id);
+        when(mockResultSet.getString("ownerId")).thenReturn("own123");
+        when(mockResultSet.getString("brand")).thenReturn("Toyota");
+        when(mockResultSet.getString("model")).thenReturn("Corolla");
+        when(mockResultSet.getString("vin")).thenReturn(validVin);
+        when(mockResultSet.getString("color")).thenReturn("Red");
+
+        // When
+        var result = vehicleDao.findById(id);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(id, result.get().getId());
+        verify(mockPreparedStatement).setString(1, id);
+    }
+
+    @Test
+    void shouldReturnOptionalEmptyWhenIdNotFound() throws SQLException {
+        // Given
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // When
+        var result = vehicleDao.findById("non-existent");
+
+        // Then
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void shouldFindVehicleByVin() throws SQLException {
         // Given
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
@@ -189,5 +224,15 @@ public class VehicleDaoTest {
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, () -> vehicleDao.delete("123"));
         assertEquals("Error deleting vehicle", exception.getMessage());
+    }
+
+    @Test
+    void findByIdShouldThrowRuntimeExceptionOnSqlException() throws SQLException {
+        // Given
+        when(mockPreparedStatement.executeQuery()).thenThrow(new SQLException("Query failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> vehicleDao.findById("123"));
+        assertEquals("Error finding vehicle by ID", exception.getMessage());
     }
 }
