@@ -32,6 +32,21 @@ public class VehicleDao {
         }
     }
 
+    public Optional<Vehicle> findById(String id) {
+        String sql = "SELECT * FROM vehicles WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRowToVehicle(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding vehicle by ID", e);
+        }
+        return Optional.empty();
+    }
+
     public Optional<Vehicle> findByVin(String vin) {
         String sql = "SELECT * FROM vehicles WHERE vin = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
