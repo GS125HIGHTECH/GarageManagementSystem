@@ -9,7 +9,7 @@ public class User {
     private String lastName;
     private String email;
     private String password;
-    private String role;
+    private Role role;
     private boolean isActive;
 
     public User(String id, String firstName, String lastName, String email, String password) {
@@ -23,7 +23,7 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.role = "USER";
+        this.role = Role.USER;
         this.isActive = true;
     }
 
@@ -36,7 +36,7 @@ public class User {
     public String getLastName() { return lastName; }
     public String getUserId() { return id; }
     public boolean isActive() { return isActive; }
-    public String getRole() { return role; }
+    public Role getRole() { return role; }
 
     public void changeFirstName(String newFirstName) {
         validateName(newFirstName, "First name");
@@ -66,11 +66,11 @@ public class User {
         return this.password.equals(candidate);
     }
 
-    public void updateRole(String newRole) {
-        if (newRole == null || newRole.isEmpty()) {
+    public void updateRole(Role newRole) {
+        if (newRole == null) {
             throw new IllegalArgumentException("Role cannot be empty");
         }
-        this.role = newRole.toUpperCase();
+        this.role = newRole;
     }
 
     private void validateEmail(String email) {

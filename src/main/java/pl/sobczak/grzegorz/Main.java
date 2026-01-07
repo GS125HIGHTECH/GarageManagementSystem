@@ -4,6 +4,7 @@ import pl.sobczak.grzegorz.dao.RepairOrderDao;
 import pl.sobczak.grzegorz.dao.UserDao;
 import pl.sobczak.grzegorz.dao.VehicleDao;
 import pl.sobczak.grzegorz.db.DatabaseConnection;
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 import pl.sobczak.grzegorz.model.Vehicle;
 import pl.sobczak.grzegorz.model.RepairOrder;
@@ -31,7 +32,7 @@ public class Main {
             User testInactiveUser = userService.registerNewUser("Jan", "Nowak", "jan@nowak.pl", "test123");
             User testAdminUser = userService.registerNewUser("Adam", "Nowak", "adam@nowak.pl", "test123");
 
-            userService.changeUserRole(testAdminUser.getEmail(), "ADMIN");
+            userService.changeUserRole(testAdminUser.getEmail(), Role.ADMIN);
             userService.deactivateUser(testInactiveUser.getEmail());
 
             userDao.getUserByEmail("jan@nowak.pl").ifPresent(user ->

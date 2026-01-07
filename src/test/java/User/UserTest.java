@@ -2,6 +2,7 @@ package User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,14 +85,13 @@ public class UserTest {
     }
 
     @Test
-    void shouldUpdateRoleAndConvertToUpperCase() {
-        user.updateRole("admin");
-        assertEquals("ADMIN", user.getRole());
+    void shouldUpdateRole() {
+        user.updateRole(Role.ADMIN);
+        assertEquals(Role.ADMIN, user.getRole());
     }
 
     @Test
     void shouldThrowExceptionWhenRoleIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> user.updateRole(""));
         assertThrows(IllegalArgumentException.class, () -> user.updateRole(null));
     }
 

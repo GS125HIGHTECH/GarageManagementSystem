@@ -27,7 +27,6 @@ public class RepairOrderService {
         repairOrderDao.findById(orderId).ifPresent(order -> {
             order.updateStatus(RepairStatus.COMPLETED);
             repairOrderDao.update(order);
-            System.out.println("Repair " + orderId + " marked as completed. Total cost: " + order.getCost());
         });
     }
 

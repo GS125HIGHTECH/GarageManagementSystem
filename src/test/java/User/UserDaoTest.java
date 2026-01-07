@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import pl.sobczak.grzegorz.dao.UserDao;
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 
 import java.sql.Connection;
@@ -60,7 +61,7 @@ public class UserDaoTest {
     void shouldUpdateUser() throws SQLException {
         // Given
         User user = new User("123", "Marek", "Nowak", "marek@test.pl", "123456");
-        user.updateRole("ADMIN");
+        user.updateRole(Role.ADMIN);
 
         // When
         userDao.updateUser(user);
@@ -105,7 +106,7 @@ public class UserDaoTest {
         assertTrue(result.isPresent());
         assertEquals("Jan", result.get().getFirstName());
         assertEquals("Kowalski", result.get().getLastName());
-        assertEquals("USER", result.get().getRole());
+        assertEquals(Role.USER, result.get().getRole());
         assertTrue(result.get().isActive());
 
         verify(mockPreparedStatement).setString(1, email);
@@ -172,6 +173,48 @@ public class UserDaoTest {
         assertTrue(result2.isEmpty());
 
         verify(mockPreparedStatement, times(2)).executeQuery();
+    }
+
+    @Test
+    void shouldFallbackToUserRoleWhenRoleInDatabaseIsInvalid() throws SQLException {
+        //Given
+        String email = "jan@test.pl";
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString("id")).thenReturn("123");
+        when(mockResultSet.getString("firstName")).thenReturn("Jan");
+        when(mockResultSet.getString("lastName")).thenReturn("Kowalski");
+        when(mockResultSet.getString("email")).thenReturn(email);
+        when(mockResultSet.getString("role")).thenReturn("Invalid");
+        when(mockResultSet.getInt("isActive")).thenReturn(1);
+
+        // When
+        var result = userDao.getUserByEmail(email);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(Role.USER, result.get().getRole());
+    }
+
+    @Test
+    void shouldKeepDefaultRoleWhenRoleInDatabaseIsNull() throws SQLException {
+        // Given
+        String email = "jan@test.pl";
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString("id")).thenReturn("123");
+        when(mockResultSet.getString("firstName")).thenReturn("Jan");
+        when(mockResultSet.getString("lastName")).thenReturn("Kowalski");
+        when(mockResultSet.getString("email")).thenReturn(email);
+        when(mockResultSet.getString("role")).thenReturn(null);
+        when(mockResultSet.getInt("isActive")).thenReturn(1);
+
+        // When
+        var result = userDao.getUserByEmail(email);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals(Role.USER, result.get().getRole());
     }
 
     @Test

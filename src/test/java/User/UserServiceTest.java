@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import pl.sobczak.grzegorz.dao.UserDao;
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 import pl.sobczak.grzegorz.service.UserService;
 
@@ -48,10 +49,10 @@ public class UserServiceTest {
         when(userDao.getUserByEmail(email)).thenReturn(Optional.of(user));
 
         // When
-        userService.changeUserRole(email, "ADMIN");
+        userService.changeUserRole(email, Role.ADMIN);
 
         // Then
-        assertEquals("ADMIN", user.getRole());
+        assertEquals(Role.ADMIN, user.getRole());
         verify(userDao).updateUser(user);
     }
 
@@ -141,7 +142,7 @@ public class UserServiceTest {
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                userService.changeUserRole(email, "ADMIN")
+                userService.changeUserRole(email, Role.ADMIN)
         );
 
         assertEquals("User not found", exception.getMessage());

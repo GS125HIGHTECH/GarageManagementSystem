@@ -1,5 +1,6 @@
 package pl.sobczak.grzegorz.dao;
 
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 
 import java.sql.Connection;
@@ -24,7 +25,7 @@ public class UserDao {
             pstmt.setString(3, user.getLastName());
             pstmt.setString(4, user.getEmail());
             pstmt.setString(5, "hidden_password");
-            pstmt.setString(6, user.getRole());
+            pstmt.setString(6, user.getRole().name());
             pstmt.setInt(7, user.isActive() ? 1 : 0);
 
             pstmt.executeUpdate();
@@ -38,7 +39,7 @@ public class UserDao {
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, user.getFirstName());
             pstmt.setString(2, user.getLastName());
-            pstmt.setString(3, user.getRole());
+            pstmt.setString(3, user.getRole().name());
             pstmt.setInt(4, user.isActive() ? 1 : 0);
             pstmt.setString(5, user.getUserId());
             pstmt.executeUpdate();
@@ -95,7 +96,16 @@ public class UserDao {
                 rs.getString("email"),
                 "secret"
         );
-        user.updateRole(rs.getString("role"));
+
+        String roleName = rs.getString("role");
+        if (roleName != null) {
+            try {
+                user.updateRole(Role.valueOf(roleName.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                user.updateRole(Role.USER);
+            }
+        }
+
         if (rs.getInt("isActive") == 0) {
             user.deactivate();
         }

@@ -1,6 +1,7 @@
 package pl.sobczak.grzegorz.service;
 
 import pl.sobczak.grzegorz.dao.UserDao;
+import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 
 public class UserService {
@@ -20,7 +21,7 @@ public class UserService {
         return newUser;
     }
 
-    public void changeUserRole(String email, String newRole) {
+    public void changeUserRole(String email, Role newRole) {
         User user = userDao.getUserByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
