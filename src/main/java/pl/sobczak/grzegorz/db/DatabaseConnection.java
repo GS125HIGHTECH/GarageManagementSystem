@@ -9,7 +9,12 @@ public class DatabaseConnection {
     private static final String URL = "jdbc:sqlite:garage.db";
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL);
+        Connection conn =  DriverManager.getConnection(URL);
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA foreign_keys = ON;");
+        }
+        return conn;
     }
 
     public static void initDatabase() {
@@ -43,11 +48,23 @@ public class DatabaseConnection {
                 "FOREIGN KEY (vehicleId) REFERENCES vehicles(id)" +
                 ")";
 
+        String sqlParts = "CREATE TABLE IF NOT EXISTS parts (" +
+                "id TEXT PRIMARY KEY, " +
+                "repairOrderId TEXT NOT NULL, " +
+                "partCode TEXT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "description TEXT, " +
+                "price REAL NOT NULL, " +
+                "quantity INTEGER NOT NULL, " +
+                "FOREIGN KEY (repairOrderId) REFERENCES repair_orders(id) ON DELETE CASCADE" +
+                ")";
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sqlUsers);
             stmt.execute(sqlVehicles);
             stmt.execute(sqlRepairOrders);
+            stmt.execute(sqlParts);
         } catch (SQLException e) {
             throw new RuntimeException("Could not initialize database tables", e);
         }
