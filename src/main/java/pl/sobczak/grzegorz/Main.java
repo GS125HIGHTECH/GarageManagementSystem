@@ -4,10 +4,7 @@ import pl.sobczak.grzegorz.dao.RepairOrderDao;
 import pl.sobczak.grzegorz.dao.UserDao;
 import pl.sobczak.grzegorz.dao.VehicleDao;
 import pl.sobczak.grzegorz.db.DatabaseConnection;
-import pl.sobczak.grzegorz.model.Role;
-import pl.sobczak.grzegorz.model.User;
-import pl.sobczak.grzegorz.model.Vehicle;
-import pl.sobczak.grzegorz.model.RepairOrder;
+import pl.sobczak.grzegorz.model.*;
 import pl.sobczak.grzegorz.service.RepairOrderService;
 import pl.sobczak.grzegorz.service.UserService;
 import pl.sobczak.grzegorz.service.VehicleService;
@@ -55,6 +52,12 @@ public class Main {
             repairService.createOrder(ro1);
             repairService.createOrder(ro2);
             repairService.createOrder(ro3);
+
+            Part oil = new Part(ro1.getId(), "OIL-5W30", "Oil 5W30", 45.0, 5);
+            Part filter = new Part(ro1.getId(), "FIL-001", "Oil filter", 30.0, 1);
+
+            repairService.addPartToOrder(ro1.getId(), oil);
+            repairService.addPartToOrder(ro1.getId(), filter);
 
             repairService.completeRepair(ro1.getId());
 
