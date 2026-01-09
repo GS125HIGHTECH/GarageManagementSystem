@@ -2,6 +2,7 @@ package pl.sobczak.grzegorz.service;
 
 import pl.sobczak.grzegorz.dao.RepairOrderDao;
 import pl.sobczak.grzegorz.dao.VehicleDao;
+import pl.sobczak.grzegorz.model.Part;
 import pl.sobczak.grzegorz.model.RepairStatus;
 import pl.sobczak.grzegorz.model.RepairOrder;
 
@@ -23,6 +24,19 @@ public class RepairOrderService {
         repairOrderDao.save(order);
     }
 
+    public void addPartToOrder(String orderId, Part part) {
+        RepairOrder order = repairOrderDao.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getStatus() == RepairStatus.COMPLETED || order.getStatus() == RepairStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot add parts to a closed or cancelled repair");
+        }
+
+        order.addPart(part);
+
+        repairOrderDao.update(order);
+    }
+
     public void completeRepair(String orderId) {
         repairOrderDao.findById(orderId).ifPresent(order -> {
             order.updateStatus(RepairStatus.COMPLETED);
@@ -30,9 +44,16 @@ public class RepairOrderService {
         });
     }
 
+    public void cancelRepair(String orderId) {
+        repairOrderDao.findById(orderId).ifPresent(order -> {
+            order.updateStatus(RepairStatus.CANCELLED);
+            repairOrderDao.update(order);
+        });
+    }
+
     public double getTotalRepairCostsForVehicle(String vehicleId) {
         return repairOrderDao.findByVehicleId(vehicleId).stream()
-                .mapToDouble(RepairOrder::getCost)
+                .mapToDouble(RepairOrder::getTotalCost)
                 .sum();
     }
 
