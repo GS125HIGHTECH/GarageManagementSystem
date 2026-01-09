@@ -2,8 +2,11 @@ package RepairOrder;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.sobczak.grzegorz.model.Part;
 import pl.sobczak.grzegorz.model.RepairOrder;
 import pl.sobczak.grzegorz.model.RepairStatus;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,15 +15,15 @@ public class RepairOrderTest {
 
     @BeforeEach
     void setUp() {
-        repairOrder = new RepairOrder("vehicle-123", "repair", 123);
+        repairOrder = new RepairOrder("123", "vehicle-123", "repair", 123);
     }
 
     @Test
     void testInitialization() {
-        assertNotNull(repairOrder.getId());
+        assertEquals("123", repairOrder.getId());
         assertEquals("vehicle-123", repairOrder.getVehicleId());
         assertEquals("repair", repairOrder.getDescription());
-        assertEquals(123, repairOrder.getCost());
+        assertEquals(123, repairOrder.getServiceCost());
         assertEquals(RepairStatus.OPEN, repairOrder.getStatus());
         assertNotNull(repairOrder.getCreatedAt());
     }
@@ -44,12 +47,26 @@ public class RepairOrderTest {
     }
 
     @Test
-    void shouldUpdateCost() {
+    void shouldUpdateServiceCost() {
         // When
-        repairOrder.updateCost(321);
+        repairOrder.updateServiceCost(321);
 
         // Then
-        assertEquals(321, repairOrder.getCost());
+        assertEquals(321, repairOrder.getServiceCost());
+    }
+
+    @Test
+    void shouldAddPartSuccessfully() {
+        // Given
+        Part part = new Part("p123", "123", "P1", "Oil", "Desc", 50.0, 1);
+
+        // When
+        repairOrder.addPart(part);
+
+        // Then
+        List<Part> parts = repairOrder.getParts();
+        assertEquals(1, parts.size());
+        assertEquals("Oil", parts.getFirst().getName());
     }
 
     @Test
@@ -69,6 +86,25 @@ public class RepairOrderTest {
 
         assertThrows(IllegalArgumentException.class, () ->
                 new RepairOrder("123", "", "repair", 123));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingNullPart() {
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> repairOrder.addPart(null),
+                "Should throw exception when adding null part");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPartBelongsToDifferentOrder() {
+        // Given
+        Part partForOtherOrder = new Part("p123", "another", "P1", "Oil", "Desc", 50.0, 1);
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> repairOrder.addPart(partForOtherOrder));
+
+        assertEquals("Part belongs to a different repair order", exception.getMessage());
     }
 
     @Test
