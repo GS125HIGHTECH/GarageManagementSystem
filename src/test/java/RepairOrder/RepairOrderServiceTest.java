@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import pl.sobczak.grzegorz.dao.RepairOrderDao;
 import pl.sobczak.grzegorz.dao.VehicleDao;
+import pl.sobczak.grzegorz.model.Part;
 import pl.sobczak.grzegorz.model.RepairOrder;
 import pl.sobczak.grzegorz.model.RepairStatus;
 import pl.sobczak.grzegorz.model.Vehicle;
@@ -117,6 +118,39 @@ public class RepairOrderServiceTest {
     }
 
     @Test
+    void shouldAddPartToOrderSuccessfully() {
+        // Given
+        String orderId = "order-123";
+        RepairOrder order = new RepairOrder(orderId, "vehicle-123", "repair", 100.0);
+        Part part = new Part("part-1", orderId, "P1", "Oil", "Desc", 50.0, 1);
+
+        when(repairOrderDao.findById(orderId)).thenReturn(Optional.of(order));
+
+        // When
+        repairOrderService.addPartToOrder(orderId, part);
+
+        // Then
+        assertEquals(1, order.getParts().size());
+        assertEquals("Oil", order.getParts().getFirst().getName());
+        verify(repairOrderDao).update(order);
+    }
+
+    @Test
+    void shouldCancelRepairSuccessfully() {
+        // Given
+        String orderId = "order-123";
+        RepairOrder order = new RepairOrder(orderId, "vehicle-123", "repair", 100.0);
+        when(repairOrderDao.findById(orderId)).thenReturn(Optional.of(order));
+
+        // When
+        repairOrderService.cancelRepair(orderId);
+
+        // Then
+        assertEquals(RepairStatus.CANCELLED, order.getStatus());
+        verify(repairOrderDao).update(order);
+    }
+
+    @Test
     void shouldNotUpdateAnythingWhenCompletingNonExistentRepair() {
         // Given
         String orderId = "non-existent";
@@ -143,5 +177,58 @@ public class RepairOrderServiceTest {
 
         assertEquals("Cannot create Order: Vehicle not found", exception.getMessage());
         verify(repairOrderDao, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingPartToClosedOrder() {
+        // Given
+        String orderId = "order-123";
+        RepairOrder order = new RepairOrder(orderId, "vehicle-123", "repair", 100.0);
+        order.updateStatus(RepairStatus.COMPLETED);
+
+        Part part = new Part("part-1", orderId, "P1", "Oil", "Desc", 50.0, 1);
+        when(repairOrderDao.findById(orderId)).thenReturn(Optional.of(order));
+
+        // When & Then
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                repairOrderService.addPartToOrder(orderId, part)
+        );
+
+        assertTrue(exception.getMessage().contains("Cannot add parts to a closed or cancelled repair"));
+        verify(repairOrderDao, never()).update(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingPartToCancelledOrder() {
+        // Given
+        String orderId = "order-123";
+        RepairOrder order = new RepairOrder(orderId, "vehicle-123", "repair", 100.0);
+        order.updateStatus(RepairStatus.CANCELLED);
+
+        Part part = new Part("part-1", orderId, "P1", "Oil", "Desc", 50.0, 1);
+        when(repairOrderDao.findById(orderId)).thenReturn(Optional.of(order));
+
+        // When & Then
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                repairOrderService.addPartToOrder(orderId, part)
+        );
+
+        assertEquals("Cannot add parts to a closed or cancelled repair", exception.getMessage());
+        verify(repairOrderDao, never()).update(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingPartToNonExistentOrder() {
+        // Given
+        String orderId = "ghost-id";
+        Part part = new Part("p1", orderId, "P1", "Oil", "Desc", 10.0, 1);
+        when(repairOrderDao.findById(orderId)).thenReturn(Optional.empty());
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                repairOrderService.addPartToOrder(orderId, part)
+        );
+
+        assertEquals("Order not found", exception.getMessage());
     }
 }
