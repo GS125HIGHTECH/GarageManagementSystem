@@ -65,18 +65,6 @@ public class PartTest {
     }
 
     @Test
-    void testToStringFormatting() {
-        Part part = new Part("ord-1", "DISK-V", "Tarcze hamulcowe", 150.00, 2);
-
-        String output = part.toString();
-
-        assertTrue(output.contains("[DISK-V]"));
-        assertTrue(output.contains("Tarcze hamulcowe"));
-        assertTrue(output.contains("x2"));
-        assertTrue(output.contains("300,00"));
-    }
-
-    @Test
     void testEquals() {
         Part samePart = new Part("p123", "123", "P1", "Oil", "Desc", 50.0, 1);
         Part differentPart = new Part("different", "123", "P1", "Oil", "Desc", 50.0, 1);
@@ -93,5 +81,17 @@ public class PartTest {
         Part samePart = new Part("p123", "123", "P1", "Oil", "Desc", 50.0, 1);
 
         assertEquals(part.hashCode(), samePart.hashCode(), "Hash codes must be identical for objects with same ID");
+    }
+
+    @Test
+    void testToString() {
+        Part part = new Part("123", "P1", "Oil", 150.00, 2);
+
+        String output = part.toString();
+
+        assertTrue(output.contains("[P1]"));
+        assertTrue(output.contains("Oil"));
+        assertTrue(output.contains("x2"));
+        assertTrue(output.contains("300,00"));
     }
 }

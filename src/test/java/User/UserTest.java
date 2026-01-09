@@ -60,8 +60,8 @@ public class UserTest {
 
     @Test
     void testChangeLastName() {
-        user.changeLastName("jan");
-        assertEquals("jan", user.getLastName());
+        user.changeLastName("kowalski");
+        assertEquals("kowalski", user.getLastName());
 
         assertThrows(IllegalArgumentException.class, () -> user.changeLastName(""));
 
