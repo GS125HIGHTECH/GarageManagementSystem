@@ -4,12 +4,7 @@ import pl.sobczak.grzegorz.dao.UserDao;
 import pl.sobczak.grzegorz.model.Role;
 import pl.sobczak.grzegorz.model.User;
 
-public class UserService {
-    private final UserDao userDao;
-
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
+public record UserService(UserDao userDao) {
 
     public User registerNewUser(String firstName, String lastName, String email, String password) {
         if (userDao.getUserByEmail(email).isPresent()) {

@@ -8,14 +8,7 @@ import pl.sobczak.grzegorz.model.RepairOrder;
 
 import java.util.List;
 
-public class RepairOrderService {
-    private final RepairOrderDao repairOrderDao;
-    private final VehicleDao vehicleDao;
-
-    public RepairOrderService(RepairOrderDao repairOrderDao, VehicleDao vehicleDao) {
-        this.repairOrderDao = repairOrderDao;
-        this.vehicleDao = vehicleDao;
-    }
+public record RepairOrderService(RepairOrderDao repairOrderDao, VehicleDao vehicleDao) {
 
     public void createOrder(RepairOrder order) {
         if (vehicleDao.findById(order.getVehicleId()).isEmpty()) {

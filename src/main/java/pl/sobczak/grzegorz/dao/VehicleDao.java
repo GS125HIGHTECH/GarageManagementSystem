@@ -10,12 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class VehicleDao {
-    private final Connection connection;
-
-    public VehicleDao(Connection connection) {
-        this.connection = connection;
-    }
+public record VehicleDao(Connection connection) {
 
     public void save(Vehicle vehicle) {
         String sql = "INSERT INTO vehicles(id, ownerId, brand, model, vin, color) VALUES (?, ?, ?, ?, ?, ?)";

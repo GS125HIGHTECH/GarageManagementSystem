@@ -12,13 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RepairOrderDao {
-    private final Connection connection;
+public record RepairOrderDao(Connection connection) {
     private static final String INSERT_PART_SQL = "INSERT INTO parts(id, repairOrderId, partCode, name, description, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-    public RepairOrderDao(Connection connection) {
-        this.connection = connection;
-    }
 
     public void save(RepairOrder order) {
         String orderSql = "INSERT INTO repair_orders(id, vehicleId, description, cost, status, createdAt) VALUES (?, ?, ?, ?, ?, ?)";

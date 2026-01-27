@@ -6,14 +6,7 @@ import pl.sobczak.grzegorz.model.Vehicle;
 
 import java.util.List;
 
-public class VehicleService {
-    private final VehicleDao vehicleDao;
-    private final UserDao userDao;
-
-    public VehicleService(VehicleDao vehicleDao, UserDao userDao) {
-        this.vehicleDao = vehicleDao;
-        this.userDao = userDao;
-    }
+public record VehicleService(VehicleDao vehicleDao, UserDao userDao) {
 
     public Vehicle registerNewVehicle(String ownerId, String brand, String model, String vin, String color) {
         if (userDao.getUserById(ownerId).isEmpty()) {

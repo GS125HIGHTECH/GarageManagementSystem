@@ -9,12 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class UserDao {
-    private final Connection connection;
-
-    public UserDao(Connection connection) {
-        this.connection = connection;
-    }
+public record UserDao(Connection connection) {
 
     public void saveUser(User user) {
         String sql = "INSERT INTO users(id, firstName, lastName, email, password, role, isActive) VALUES(?,?,?,?,?,?,?)";
